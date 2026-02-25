@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>字体生成器</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#121212;color:#fff;font-family:sans-serif;padding:20px;max-width:600px;margin:0 auto}
+  h1{text-align:center;margin:20px 0}
+  input{width:100%;padding:14px 16px;font-size:16px;border-radius:12px;border:none;margin-bottom:16px}
+  .item{
+    background:#222;
+    padding:14px 16px;
+    border-radius:12px;
+    margin:8px 0;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+  }
+  .text{
+    font-size:22px;
+    flex:1;
+    word-break:break-all;    /* 自动换行 */
+    white-space:normal;      /* 允许换行 */
+    overflow-wrap:anywhere;
+  }
+  button{
+    background:#6366f1;
+    color:#fff;
+    border:none;
+    padding:8px 12px;
+    border-radius:8px;
+    cursor:pointer;
+    flex-shrink:0;
+  }
+</style>
+
+<h1><u>字体生成器</u></h1>
+<input type="text" id="input" placeholder="Type something..." oninput="generate()">
+<div id="output"></div>
+
+<script>
+const normal = "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm1234567890";
+
+const lines = [
+  "𝔔𝔚𝔈ℜ𝔗𝔜𝔘ℑ𝔒𝔓𝔄𝔖𝔇𝔉𝔊ℌ𝔍𝔎𝔏ℨ𝔛ℭ𝔙𝔅𝔑𝔐𝔮𝔴𝔢𝔯𝔱𝔶𝔲𝔦𝔬𝔭𝔞𝔰𝔡𝔣𝔤𝔥𝔧𝔨𝔩𝔷𝔵𝔠𝔳𝔟𝔫𝔪1234567890",
+  "𝒬𝒲ℰℛ𝒯𝒴𝒰ℐ𝒪𝒫𝒜𝒮𝒟ℱ𝒢ℋ𝒥𝒦ℒ𝒵𝒳𝒞𝒱ℬ𝒩ℳ𝓆𝓌ℯ𝓇𝓉𝓎𝓊𝒾ℴ𝓅𝒶𝓈𝒹𝒻ℊ𝒽𝒿𝓀𝓁𝓏𝓍𝒸𝓋𝒷𝓃𝓂1234567890",
+  "𝓠𝓦𝓔𝓡𝓣𝓨𝓤𝓘𝓞𝓟𝓐𝓢𝓓𝓕𝓖𝓗𝓙𝓚𝓛𝓩𝓧𝓒𝓥𝓑𝓝𝓜𝓺𝔀𝓮𝓻𝓽𝔂𝓾𝓲𝓸𝓹𝓪𝓼𝓭𝓯𝓰𝓱𝓳𝓴𝓵𝔃𝔁𝓬𝓿𝓫𝓷𝓶1234567890",
+  "𝕼𝖂𝕰𝕽𝕿𝖄𝖀𝕴𝕺𝕻𝕬𝕾𝕯𝕱𝕲𝕳𝕵𝕶𝕷𝖅𝖃𝕮𝖁𝕭𝕹𝕸𝖖𝖜𝖊𝖗𝖙𝖞𝖚𝖎𝖔𝖕𝖆𝖘𝖉𝖋𝖌𝖍𝖏𝖐𝖑𝖟𝖝𝖈𝖛𝖇𝖓𝖒1234567890",
+  "ℚ𝕎𝔼ℝ𝕋𝕐𝕌𝕀𝕆ℙ𝔸𝕊𝔻𝔽𝔾ℍ𝕁𝕂𝕃ℤ𝕏ℂ𝕍𝔹ℕ𝕄𝕢𝕨𝕖𝕣𝕥𝕪𝕦𝕚𝕠𝕡𝕒𝕤𝕕𝕗𝕘𝕙𝕛𝕜𝕝𝕫𝕩𝕔𝕧𝕓𝕟𝕞𝟙𝟚𝟛𝟜𝟝𝟞𝟟𝟠𝟡𝟘",
+  "Q₩ɆⱤ₮ɎɄłØ₱₳₴Đ₣₲ⱧJ₭ⱠⱫӾ₵V฿₦₥Q₩ɆⱤ₮ɎɄłØ₱₳₴Đ₣₲ⱧJ₭ⱠⱫӾ₵V฿₦₥1234567890",
+  "QWERTYUIOPASDFGHJKLZXCVBNMϙɯҽɾƚყυισραʂԃϝɠԋʝƙʅȥxƈʋႦɳɱ1234567890",
+  "𝘘𝘞𝘌𝘙𝘛𝘠𝘜𝘐𝘖𝘗𝘈𝘚𝘋𝘍𝘎𝘏𝘑𝘒𝘓𝘡𝘟𝘊𝘝𝘉𝘕𝘔𝘲𝘸𝘦𝘳𝘵𝘺𝘶𝘪𝘰𝘱𝘢𝘴𝘥𝘧𝘨𝘩𝘫𝘬𝘭𝘻𝘹𝘤𝘷𝘣𝘯𝘮1234567890",
+  "𝗤𝗪𝗘𝗥𝗧𝗬𝗨𝗜𝗢𝗣𝗔𝗦𝗗𝗙𝗚𝗛𝗝𝗞𝗟𝗭𝗫𝗖𝗩𝗕𝗡𝗠𝗾𝘄𝗲𝗿𝘁𝘆𝘂𝗶𝗼𝗽𝗮𝘀𝗱𝗳𝗴𝗵𝗷𝗸𝗹𝘇𝘅𝗰𝘃𝗯𝗻𝗺𝟭𝟮𝟯𝟰𝟱𝟲𝟳𝟴𝟵𝟬",
+  "𝐐𝐖𝐄𝐑𝐓𝐘𝐔𝐈𝐎𝐏𝐀𝐒𝐃𝐅𝐆𝐇𝐉𝐊𝐋𝐙𝐗𝐂𝐕𝐁𝐍𝐌𝐪𝐰𝐞𝐫𝐭𝐲𝐮𝐢𝐨𝐩𝐚𝐬𝐝𝐟𝐠𝐡𝐣𝐤𝐥𝐳𝐱𝐜𝐯𝐛𝐧𝐦𝟏𝟐𝟑𝟒𝟓𝟔𝟕𝟖𝟗𝟎",
+  "𝑸𝑾𝑬𝑹𝑻𝒀𝑼𝑰𝑶𝑷𝑨𝑺𝑫𝑭𝑮𝑯𝑱𝑲𝑳𝒁𝑿𝑪𝑽𝑩𝑵𝑴𝒒𝒘𝒆𝒓𝒕𝒚𝒖𝒊𝒐𝒑𝒂𝒔𝒅𝒇𝒈𝒉𝒋𝒌𝒍𝒛𝒙𝒄𝒗𝒃𝒏𝒎1234567890",
+];
+
+const maps = lines.map(line => {
+  const map = {};
+  const chars = Array.from(line);
+  for (let i = 0; i < normal.length; i++) {
+    map[normal[i]] = chars[i] || normal[i];
+  }
+  return map;
+});
+
+function convert(text, map) {
+  return Array.from(text).map(c => map[c] || c).join('');
+}
+
+function generate() {
+  const text = document.getElementById('input').value;
+  const out = document.getElementById('output');
+  out.innerHTML = '';
+  maps.forEach(map => {
+    const res = convert(text, map);
+    out.innerHTML += `
+      <div class="item">
+        <div class="text">${res}</div>
+        <button onclick="navigator.clipboard.writeText(this.previousElementSibling.innerText)">Copy</button>
+      </div>
+    `;
+  });
+}
+
+generate();
+</script>
