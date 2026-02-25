@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const emailLink = document.getElementById('emailLink');
   if (emailLink) {
     emailLink.addEventListener('click', function(e) {
-      const email = "sepa132@dollicons.com";
+      const email = "am9qbw@dollicons.com";
 
       // 尝试复制
       navigator.clipboard.writeText(email).then(() => {
